@@ -1,45 +1,31 @@
-
 # Bitcoin Derivatives Positioning and Crash Risk Prediction
 
-### An Empirical Study of Leverage, Market Positioning and Downside Risk
+Does BTC perpetual-futures positioning help predict a decline in Bitcoin and improve portfolio allocation after trading costs?
 
-## Overview
+The study uses Binance BTCUSDT spot closes and USD-M perpetual positioning on 8-hour bars from 2023 through 2025. A positive label means the close **72 hours later** is at least 5% below the current close. Price features are compared with price plus open interest, long/short ratios and taker activity. Logistic regression and XGBoost use expanding training windows, a 72-hour purge and chronological out-of-sample tests.
 
-This project investigates whether Bitcoin derivatives market positioning contains predictive information about future downside risk.
+[Findings and alert chart](docs/findings.md)
 
-The study focuses on open interest, trader positioning, and market activity to identify potential signals of market vulnerability and leveraged unwinding.
+## Reproduce
 
-The ultimate objective is to assess whether these signals can improve systematic Bitcoin portfolio allocation and risk management.
+Run these commands from the repository root in a Python environment. The download steps require access to Binance's public archive. If the processed feature and research datasets and spot CSV are already available, start the analysis at the walk-forward step.
 
-## Research Objectives
+```powershell
+python -m pip install -r requirements.txt
+python src/data/download_metrics.py
+python src/data/download_prices.py
+python src/features/build_positioning.py
+python src/features/build_dataset.py
+python src/build_features.py
+python src/walk_forward.py
+python src/train_xgboost.py
+python src/train_xgboost.py --regularized
+python src/backtest.py
+python src/analyze_backtest.py
+python src/analyze_crash_episodes.py
+python src/episode_robustness.py
+```
 
-- Investigate the relationship between derivatives positioning and Bitcoin downside risk.
-- Evaluate the predictive power of positioning indicators beyond traditional price-based variables.
-- Compare statistical and machine learning approaches for crash risk prediction.
-- Assess the economic value of risk forecasts through systematic portfolio backtesting.
+## Reference
 
-## Data & Methodology
-
-The research uses Bitcoin spot and derivatives market data, primarily from Binance.
-
-Key indicators include:
-
-- **Derivatives positioning:** Open interest, long/short ratios, and taker activity.
-- **Market variables:** Returns, momentum, and realized volatility.
-- **Potential extensions:** Funding rates, futures basis, and liquidations.
-
-The methodology combines feature engineering, statistical analysis, predictive modelling, and walk-forward out-of-sample validation.
-
-Portfolio strategies will be evaluated using risk-adjusted performance metrics and transaction costs.
-
-## Research Framework
-
-1. **Data & Features:** Collect, clean, and transform market and positioning data.
-2. **Crash Risk Modelling:** Estimate the probability of significant Bitcoin price declines.
-3. **Model Validation:** Evaluate predictive performance and robustness across market regimes.
-4. **Portfolio Allocation:** Translate crash risk forecasts into systematic exposure decisions.
-5. **Backtesting:** Assess portfolio performance, drawdowns, and transaction costs.
-
-## Disclaimer
-
-This project is intended for quantitative research and educational purposes only. It does not constitute investment advice.
+Tran et al. (2026), [Systemic Risk from Financial Leverage in Digital Asset Markets: Evidence From Perpetual Futures](https://doi.org/10.51505/IJEBMR.2026.10315). This project studies BTC alone, extends the prediction horizon to 72 hours and tests an allocation rule after transaction costs.
